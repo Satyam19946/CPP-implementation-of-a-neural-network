@@ -128,8 +128,8 @@ void Layer::backward_pass(const float* output, const Layer& input, \
                 "*"<<delta[i]<<"*"<<input_neurons[j] <<" = ";
                 
             }
-            new_weights[i*input_size + j] -= learning_rate*delta[i]\
-                                                *input_neurons[j];
+            new_weights[i*input_size + j] = weights[i*input_size + j] - \
+                                    learning_rate*delta[i]*input_neurons[j];
             if (debug) std::cout<<new_weights[i*input_size + j]<<"\n";
         }
         bias[i] -= learning_rate*delta[i];
@@ -165,7 +165,8 @@ void Layer::backward_pass(const Layer& output, const Layer& input, \
                 "*"<<delta[i]<<"*"<<input_neurons[j] <<" = ";
                 
             }
-            new_weights[i*input_size + j] -= learning_rate*delta[i]*input_neurons[j];
+            new_weights[i*input_size + j] = weights[i*input_size + j] - \
+                                        learning_rate*delta[i]*input_neurons[j];
             if (debug) std::cout<<new_weights[i*input_size + j]<<"\n";
         }
         bias[i] -= learning_rate*delta[i];
