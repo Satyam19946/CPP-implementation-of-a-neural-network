@@ -18,8 +18,11 @@ class Layer {
         float error;
         // float** weights; Unflattened is slower (Linear layout of memory)
         float *weights = nullptr;
+        // in backprop first all gradients are calc then weights are updated
+        float *new_weights = nullptr;
         float *bias = nullptr;
         float *neurons = nullptr;
+        float *delta = nullptr;
         static size_t number_layers;
     public:
         /**
@@ -44,11 +47,23 @@ class Layer {
 
         /**
          * @brief Get the neurons in this layer
-         *
+         * 
          * @return The neurons in this layer
          */
         float* getNeurons() const;
         
+        /**
+         * @brief Get the weights connecting this layer to the prev layer
+         */
+        float* getWeights() const;
+
+        /**
+         * @brief Get the error in this layer (used for backprop)
+         * 
+         * @return The derivative of this layer with respect to the target
+         */
+        float* getDelta() const;
+
         /**
          * @brief Gets the number of neurons in this layer
          * 
@@ -81,11 +96,20 @@ class Layer {
         void forward_pass(const Layer& prev);
         
         /**
+         * @brief backward pass for the output layer
+         */
+        void backward_pass(const float* output, const Layer& input,\
+                                            const float learning_rate);
+
+        /**
          * @brief Executes the backward pass step and updates weights
          * 
-         * @param next Uses the next layer to calculate the difference
+         * @param output The layer right after this layer
+         * @param input The layer before this layer
+         * @param learning_rate The learning rate for this function
          */
-        void backward_pass(const Layer& next);
+        void backward_pass(const Layer& output, const Layer& input,\
+                                                    const float learning_rate);
         
         /**
          * @brief Calculates the error using the target

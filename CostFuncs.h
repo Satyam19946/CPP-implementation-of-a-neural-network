@@ -12,7 +12,7 @@ namespace CostFuncs {
         float total = 0.0f;
         for (size_t i = 0; i < size; i++){
             // Direct multiplication is faster than std::powf or std::expf
-            total += (target[i]-y[i])*(target[i]-y[i]);
+            total += (y[i]-target[i])*(y[i]-target[i]);
         }
         return total;
     };

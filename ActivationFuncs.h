@@ -16,11 +16,11 @@ namespace ActivationFuncs {
         }
     };
 
-    constexpr float DeltaReLU(float x){
+    constexpr float derivate_ReLU(float x){
         if (x < 0){
             return 0.0f;
         } else {
-            return x;
+            return 1.0f;
         }
     };
 

@@ -26,6 +26,8 @@ Layer::Layer(const Layer& prev, size_t n_neurons, float init_value){
                 // input=4x1, output=6x1 => weights=6x4
     bias = new float[n_neurons];
     neurons = new float[n_neurons];
+    delta = new float[n_neurons];
+    new_weights = new float[n_neurons*input_n_neurons];
     this->n_neurons = n_neurons;
     number_layers += 1;
     this->initialize_weights(init_value);
@@ -61,8 +63,16 @@ float* Layer::getNeurons() const {
     return neurons;
 }
 
+float* Layer::getWeights() const {
+    return weights;
+}
+
 size_t Layer::getSize() const {
     return n_neurons;
+}
+
+float* Layer::getDelta() const {
+    return delta;
 }
 
 void Layer::setDebug(bool value) {
@@ -97,14 +107,78 @@ void Layer::calcError(float* target){
     error = CostFuncs::MSE(neurons, target, n_neurons);
 }
 
-void Layer::backward_pass(const Layer& output){
+void Layer::backward_pass(const float* output, const Layer& input, \
+                                                const float learning_rate){
+    size_t size = this->getSize();
+    
+    for (size_t i=0; i < size; i++){
+        if (debug) std::cout<<"Delta "<<i<< " was: "<<delta[i];
+        delta[i] =  output[i] * \
+            ActivationFuncs::derivate_ReLU(neurons[i]);
+        if (debug) std::cout<<" Delta after update: "<<delta[i]<<"\n";
+    }
 
+    float *input_neurons = input.getNeurons();
+    size_t input_size = input.getSize();
+    for (size_t i=0; i < size; i++){
+        for (size_t j=0; j < input_size; j++){
+            if (debug){
+                std::cout<<"Weight "<<i*size+j<<" was: "<<weights[i*size + j]<<\
+                " New Weight = "<<weights[i*size+j]<<" - "<<learning_rate<<\
+                "*"<<delta[i]<<"*"<<input_neurons[j] <<" = ";
+                
+            }
+            new_weights[i*input_size + j] -= learning_rate*delta[i]\
+                                                *input_neurons[j];
+            if (debug) std::cout<<new_weights[i*input_size + j]<<"\n";
+        }
+        bias[i] -= learning_rate*delta[i];
+        if (debug) std::cout<<"New Bias: "<<bias[i]<<"\n";
+    }
+}
+
+void Layer::backward_pass(const Layer& output, const Layer& input, \
+                                                const float learning_rate) {
+    size_t size = this->getSize();
+    size_t output_size = output.getSize();
+    float* output_delta = output.getDelta();
+    float* output_weights = output.getWeights();
+    float *input_neurons = input.getNeurons();
+    size_t input_size = input.getSize();
+
+    for (size_t i=0; i < size; i++){
+        float error_from_outputs = 0;
+        for (size_t j=0; j < output_size; j++){
+            error_from_outputs += output_delta[j] * output_weights[j*size + i];
+        }
+        if (debug) std::cout<<"Delta "<<i<< " was: "<<delta[i];
+        delta[i] =  error_from_outputs * \
+            ActivationFuncs::derivate_ReLU(neurons[i]);
+        if (debug) std::cout<<" Delta after update: "<<delta[i]<<"\n";
+    }
+
+    for (size_t i=0; i < size; i++){
+        for (size_t j=0; j < input_size; j++){
+            if (debug){
+                std::cout<<"Weight "<<i*size+j<<" was: "<<weights[i*size + j]<<\
+                " New Weight = "<<weights[i*size+j]<<" - "<<learning_rate<<\
+                "*"<<delta[i]<<"*"<<input_neurons[j] <<" = ";
+                
+            }
+            new_weights[i*input_size + j] -= learning_rate*delta[i]*input_neurons[j];
+            if (debug) std::cout<<new_weights[i*input_size + j]<<"\n";
+        }
+        bias[i] -= learning_rate*delta[i];
+        if (debug) std::cout<<"New Bias: "<<bias[i]<<"\n";
+    }
 }
 
 Layer::~Layer(){
     if (weights!=nullptr) delete[] weights; 
     if (bias!=nullptr) delete[] bias;
     if (neurons!=nullptr) delete[] neurons;
+    if (delta!=nullptr) delete[] delta;
+    if (new_weights!=nullptr) delete[] new_weights;
     number_layers -= 1;
 }
 
