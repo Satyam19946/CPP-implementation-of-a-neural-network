@@ -1,3 +1,5 @@
+### **Notes generated using Gemini for C++**
+
 # Why the Flattened Approach is Faster
 
 In modern C++ development (2025), performance-critical applications like neural networks prioritize flattened arrays due to how modern CPUs interact with memory.
@@ -233,3 +235,72 @@ void display_array(const T* arr, int size) {
 
 ## 6. Summary Recommendation for 2025
 If your function logic is identical regardless of the data type (like printing an array), use a template. It provides a type-safe, modern replacement for macros. If the function only ever handles one specific type, use a standard header and source file to keep project build times fast.
+
+# C++ Vector Cheat Sheet (2026 Edition)
+
+In modern C++, `std::vector` is the standard container for managing dynamic collections of data. It provides the performance of an array with the flexibility of automatic memory management.
+
+## 1. Vector vs. Array Equivalents
+
+*   **std::vector<T>**
+    *   Size: Dynamic (can change at runtime).
+    *   Memory: Data is stored on the Heap.
+    *   Safety: High; memory is managed automatically by the object.
+    *   Primary Use: Most generic tasks and large datasets.
+
+*   **std::array<T, N>**
+    *   Size: Fixed (must be known at compile-time).
+    *   Memory: Data is stored on the Stack.
+    *   Safety: High; integrates with modern STL features.
+    *   Primary Use: Small, fixed-size collections where performance is critical.
+
+*   **C-Style Array (T arr[N])**
+    *   Size: Fixed (must be known at compile-time).
+    *   Memory: Stack or Global.
+    *   Safety: Low; prone to buffer overflows and decays into a pointer.
+    *   Primary Use: Legacy code and C-API compatibility.
+
+
+## 2. How to Index
+
+You can access elements using the following methods:
+
+*   **Subscript Operator `[]`**
+    *   Usage: `int val = myVector[i];`
+    *   Note: Fastest access; does not perform bounds checking. Accessing an invalid index causes undefined behavior.
+
+*   **Member Function `.at()`**
+    *   Usage: `int val = myVector.at(i);`
+    *   Note: Safe access; performs bounds checking. Throws `std::out_of_range` if the index is invalid.
+
+*   **Direct Access**
+    *   `myVector.front()`: Returns the first element.
+    *   `myVector.back()`: Returns the last element.
+
+
+## 3. Passing to a Function
+
+Efficiency is key when passing vectors to avoid expensive deep copies.
+
+*   **Pass by Const Reference (Read-Only) - Recommended**
+    *   Syntax: `void func(const std::vector<int>& vec)`
+    *   Reason: Avoids copying the entire data set; ensures the function cannot modify the data.
+
+*   **Pass by Reference (Read-Write)**
+    *   Syntax: `void func(std::vector<int>& vec)`
+    *   Reason: Use this if the function needs to modify the original vector's contents.
+
+*   **Pass by Value (Copying) - Avoid**
+    *   Syntax: `void func(std::vector<int> vec)`
+    *   Reason: Generally avoided because it creates a complete duplicate of the vector, which is slow for large datasets.
+
+
+## 4. Key Notes on Vectors
+
+*   **Contiguous Storage**: Elements are stored in one continuous block of memory. This makes it cache-friendly and very fast for iteration.
+*   **Size vs. Capacity**:
+    *   `size()`: The number of elements currently inside.
+    *   `capacity()`: The amount of memory currently reserved. When size exceeds capacity, the vector usually doubles its memory allocation.
+*   **Performance Tip (reserve)**: If you know you will add 1,000 items, call `vec.reserve(1000)` first. This prevents the vector from reallocating memory multiple times while growing.
+*   **Automatic Memory Management**: When a vector goes out of scope, it automatically frees the allocated memory and calls destructors for its elements.
+*   **Iterators**: Vectors support iterators (e.g., `vec.begin()`, `vec.end()`), making them compatible with all standard algorithms like `std::sort` or `std::find`.

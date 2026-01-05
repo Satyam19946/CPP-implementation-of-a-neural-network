@@ -6,9 +6,9 @@
     The value of neurons in layer y with previous layer x 
     having weights w and a bias b is given as x*W + b = y
 */
+#pragma once
 
 #include <cstddef>
-#pragma once
 
 class Layer {
     private:
@@ -33,7 +33,8 @@ class Layer {
         /**
          * @brief Allocate memory for weights, bias, and the neurons
          * 
-         * @param prev The previous layer
+         * @param prev The previous layer (TODO: DONT NEED WHOLE LAYER, convert\
+         *                                          to Layer* prev)
          * @param number_n The number of neurons in this layer
          * @param init_value Optional initial value for all weights and bias 
          */

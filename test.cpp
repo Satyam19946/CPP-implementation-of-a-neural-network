@@ -1,13 +1,12 @@
-/*  
-    Author - Satyam Gupta 
-    Date - 12/25/25
-    A neural network consists of the following - 
-        1. An input layer - reads the data (x)
-        2. n number of hidden layers (performs computations on x)
-        3. An output layer - used for predictions (y) 
-*/
+/**
+ *  Author - Satyam Gupta
+ *  Date - 1/4/2026
+ *  Tests
+ */
 #include"Layer.h"
+#include"NeuralNetwork.h"
 #include<iostream>
+
 
 inline void display_array(const float* arr, size_t size, \
                                     std::string arrayName="") {
@@ -174,10 +173,29 @@ int backward_pass_test(){
     return 0;
 }
 
+int read_input_test(){
+    NeuralNetwork nn;
+    nn.read_input("mnist_train.csv");
+    nn.display_input(5);
+    return 1;
+}
+
+int neural_network_structure_test(){
+    NeuralNetwork nn;
+    nn.add_layer(5);
+    nn.add_layer(36);
+    nn.add_layer(47);
+    nn.add_layer(4);
+    nn.display_layers();
+    return 1;
+}
+
 int main(){
     //forward_pass_test();
     //setNeuron_test();
     //getError_test();
-    backward_pass_test();
+    //backward_pass_test();
+    // read_input_test();
+    neural_network_structure_test();
     return 1;
 }
